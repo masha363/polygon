@@ -1,0 +1,40 @@
+class Solution {
+public:
+    //Функция для проверки, можно ли запустить все компьютеры на время T
+    bool canRunAllComputersForTime(long long n, vector<int>& batteries, long long T) {
+        long long total_time = 0;
+        
+        //Рассчитываю общее доступное время работы батарей, которое можно распределить между n компьютерами
+        for (int battery : batteries) {
+            total_time += min((long long)battery, T);
+        }
+        
+        //Если общего времени достаточно для работы n компьютеров в течение T минут, возвращаю true
+        return total_time >= n * T;
+    }
+    
+    //Основная функция для нахождения максимального времени работы
+    long long maxRunTime(int n, vector<int>& batteries) {
+        long long left = 0;
+        long long right = 0;
+        
+        //Правая граница — это сумма всех батарей, так как это максимальное возможное время
+        for (int battery : batteries) {
+            right += battery;
+        }
+        
+        //Бинарный поиск для нахождения максимального времени T, которое возможно
+        while (left < right) {
+            long long mid = left + (right - left + 1) / 2; //Чтобы избежать бесконечного цикла, выбираю верхнюю половину
+            
+            //Если возможно запустить все компьютеры на mid минут, пробую для большего времени
+            if (canRunAllComputersForTime(n, batteries, mid)) {
+                left = mid; //mid возможно, ищу большее время
+            } else {
+                right = mid - 1; //mid невозможно, ищу меньшее время
+            }
+        }
+        
+        return left; //Возвращаю максимальное возможное время
+    }
+};
